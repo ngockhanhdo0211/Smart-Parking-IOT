@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#11191d">
+  <meta name="description" content="Realtime Smart Parking IoT monitoring and control dashboard">
+  <title>Smart Parking System</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/responsive.css">
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to dashboard</a>
+  <div class="connection-banner" id="connection-banner" role="alert" hidden>SERVER DISCONNECTED — reconnecting…</div>
+
+  <header class="site-header">
+    <div class="header-title">
+      <span class="eyebrow">CONTROL / MONITOR / RESPOND</span>
+      <h1>SMART PARKING<br>SYSTEM</h1>
+      <p>IoT Parking Monitoring &amp; Control Dashboard</p>
+    </div>
+    <div class="header-telemetry" aria-label="Connection status">
+      <div class="telemetry-item"><span class="status-dot is-success" id="header-server-dot"></span><span>Server</span><strong id="header-server">Online</strong></div>
+      <div class="telemetry-item"><span class="status-dot" id="header-esp-dot"></span><span>ESP32</span><strong id="header-esp">Offline</strong></div>
+      <div class="telemetry-item clock"><span>Local time</span><time id="current-time">--:--:--</time></div>
+    </div>
+  </header>
+
+  <main id="main-content" class="dashboard">
+    <section class="summary-grid" aria-label="Parking summary">
+      <article class="summary-card"><span>Total slots</span><strong id="summary-total">0</strong></article>
+      <article class="summary-card available"><span>Available</span><strong id="summary-available">0</strong></article>
+      <article class="summary-card occupied"><span>Occupied</span><strong id="summary-occupied">0</strong></article>
+    </section>
+
+    <section class="panel parking-panel">
+      <div class="section-heading"><div><span class="section-index">01</span><h2>Parking status</h2></div><p>Live occupancy from infrared sensors</p></div>
+      <div class="parking-grid" id="parking-grid" aria-live="polite"></div>
+    </section>
+
+    <div class="operations-grid">
+      <section class="panel sensors-panel">
+        <div class="section-heading"><div><span class="section-index">02</span><h2>Sensor monitoring</h2></div></div>
+        <div class="sensor-grid">
+          <article class="sensor-card" id="gas-card">
+            <div class="card-heading"><span>Gas sensor</span><span class="status-dot" id="gas-dot"></span></div>
+            <div class="sensor-reading"><strong id="gas-value">0</strong><span>ppm</span></div>
+            <div class="progress-track" aria-label="Gas level"><span id="gas-progress"></span><i class="threshold-marker"></i></div>
+            <p class="status-label" id="gas-status">NORMAL</p>
+          </article>
+          <article class="sensor-card" id="vibration-card">
+            <div class="card-heading"><span>Vibration sensor</span><span class="status-dot" id="vibration-dot"></span></div>
+            <div class="vibration-visual" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span></div>
+            <p class="status-label" id="vibration-status">NORMAL</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="panel gate-panel">
+        <div class="section-heading"><div><span class="section-index">03</span><h2>Gate control</h2></div><p id="gate-status">CLOSED</p></div>
+        <div class="barrier-scene" id="barrier-scene" aria-label="Gate is closed">
+          <div class="barrier-post"><span></span></div><div class="barrier-arm"><i></i><i></i><i></i><i></i></div><div class="road-line"></div>
+        </div>
+        <div class="button-row">
+          <button class="button primary" id="open-gate" type="button">Open gate</button>
+          <button class="button secondary" id="close-gate" type="button">Close gate</button>
+        </div>
+      </section>
+    </div>
+
+    <section class="panel system-panel">
+      <div class="section-heading"><div><span class="section-index">04</span><h2>System health</h2></div></div>
+      <dl class="system-list">
+        <div><dt><span class="status-dot is-success" id="system-server-dot"></span>Server</dt><dd id="system-server">Online</dd></div>
+        <div><dt><span class="status-dot" id="system-esp-dot"></span>ESP32</dt><dd id="system-esp">Offline</dd></div>
+        <div><dt>Last ESP32 update</dt><dd id="last-seen">No data received</dd></div>
+        <div><dt>Realtime channel</dt><dd id="socket-status">Connecting</dd></div>
+      </dl>
+    </section>
+
+    <section class="panel demo-panel" id="demo-panel">
+      <div class="section-heading">
+        <div><span class="section-index">DEV</span><h2>Demo panel</h2></div>
+        <label class="switch"><input id="demo-enabled" type="checkbox"><span aria-hidden="true"></span><b>Enable demo mode</b></label>
+      </div>
+      <p class="demo-note">Simulate hardware input while the physical ESP32 is disconnected.</p>
+      <fieldset id="demo-controls" disabled>
+        <legend class="visually-hidden">Demo controls</legend>
+        <div class="demo-slots" id="demo-slots"></div>
+        <label class="range-control"><span>Gas value <output id="demo-gas-output">0 ppm</output></span><input id="demo-gas" type="range" min="0" max="1000" step="10" value="0"></label>
+        <div class="demo-selects">
+          <label>Vibration<select id="demo-vibration"><option value="false">Normal</option><option value="true">Detected</option></select></label>
+          <label>ESP32<select id="demo-esp"><option value="false">Offline</option><option value="true">Online</option></select></label>
+          <label>Gate status<select id="demo-gate"><option value="closed">Closed</option><option value="opening">Opening</option><option value="open">Open</option><option value="closing">Closing</option></select></label>
+        </div>
+        <button class="button primary" id="apply-demo" type="button">Apply simulation</button>
+      </fieldset>
+    </section>
+  </main>
+
+  <footer><strong>Smart Parking IoT System</strong><span>ESP32 + Node.js + Web Dashboard</span></footer>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/js/api.js"></script>
+  <script src="/js/ui.js"></script>
+  <script src="/js/app.js"></script>
+</body>
+</html>
