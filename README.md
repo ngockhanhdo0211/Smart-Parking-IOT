@@ -46,8 +46,10 @@ Trạng thái sẽ trở về mặc định mỗi lần Node.js khởi động l
 | GET | `/api/system/state` | Lấy toàn bộ trạng thái |
 | POST | `/api/system/update` | ESP32 gửi sensor và heartbeat |
 | POST | `/api/system/demo` | Cập nhật dữ liệu mô phỏng |
-| POST | `/api/gate/open` | Yêu cầu mở cổng |
-| POST | `/api/gate/close` | Yêu cầu đóng cổng |
+| POST | `/api/gate/in/open` | Yêu cầu mở cổng vào (GPIO 13) |
+| POST | `/api/gate/in/close` | Yêu cầu đóng cổng vào (GPIO 13) |
+| POST | `/api/gate/out/open` | Yêu cầu mở cổng ra (GPIO 14) |
+| POST | `/api/gate/out/close` | Yêu cầu đóng cổng ra (GPIO 14) |
 | GET | `/api/gate/command` | ESP32 lấy lệnh đang chờ |
 | POST | `/api/gate/status` | ESP32 xác nhận trạng thái cổng |
 
@@ -65,7 +67,7 @@ Demo Mode chỉ mở khóa control ở giao diện, không tạo state thứ hai
 2. Lấy địa chỉ IPv4 của máy, ví dụ `192.168.1.20`.
 3. Trong firmware đặt base URL thành `http://192.168.1.20:3000`.
 4. Gửi sensor định kỳ đến `/api/system/update` (ngắn hơn 10 giây).
-5. Poll `/api/gate/command`, điều khiển servo, rồi POST kết quả đến `/api/gate/status`.
+5. Poll `/api/gate/command`, điều khiển servo GPIO 13/14 theo trường `gate`, rồi POST kết quả kèm đúng `gate` đến `/api/gate/status`.
 6. Cho phép port 3000 trong firewall của máy nếu thiết bị không kết nối được.
 
 Xem flow đầy đủ trong [docs/esp32-integration.md](docs/esp32-integration.md).

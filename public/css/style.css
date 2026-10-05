@@ -62,7 +62,7 @@ h1 { margin: var(--space-md) 0 var(--space-xs); max-width: 12ch; min-width: 0; f
 .parking-card p { margin: 0; font: 750 var(--text-sm) var(--font-mono); letter-spacing: .08em; }
 .parking-card.is-available { color: var(--color-success); border-color: color-mix(in oklch, var(--color-success) 45%, var(--color-line)); }
 .parking-card.is-occupied { color: var(--color-danger); border-color: color-mix(in oklch, var(--color-danger) 50%, var(--color-line)); }
-.operations-grid { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(360px, .85fr); gap: var(--space-lg); }
+.operations-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-lg); }
 .sensor-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-md); }
 .sensor-card { background: var(--color-surface-raised); color: var(--color-text); border: var(--rule-thin) solid var(--color-line); border-radius: var(--radius-md); padding: var(--space-lg); min-width: 0; transition: border-color var(--dur-normal) var(--ease-out); }
 .sensor-card.is-warning { border-color: var(--color-danger); animation: warning-pulse 1.8s var(--ease-in-out) infinite; }
@@ -81,6 +81,12 @@ h1 { margin: var(--space-md) 0 var(--space-xs); max-width: 12ch; min-width: 0; f
 .vibration-visual span:nth-child(2), .vibration-visual span:nth-child(4) { height: 65%; }
 .vibration-visual span:nth-child(3) { height: 100%; }
 .is-warning .vibration-visual span { background: var(--color-danger); animation: vibration-bars 500ms var(--ease-in-out) infinite alternate; }
+.gate-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-md); }
+.gate-unit { min-width: 0; padding: var(--space-md); background: var(--color-surface-raised); border: var(--rule-thin) solid var(--color-line); border-radius: var(--radius-md); }
+.gate-unit-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-md); margin-bottom: var(--space-md); }
+.gate-unit-heading span { color: var(--color-accent); font: 700 var(--text-xs)/1 var(--font-mono); letter-spacing: .08em; }
+.gate-unit-heading h3 { margin: var(--space-xs) 0 0; font: 700 var(--text-lg)/1 var(--font-display); }
+.gate-unit-heading strong { color: var(--color-muted); font: 700 var(--text-sm)/1 var(--font-mono); }
 .barrier-scene { position: relative; height: 180px; overflow: hidden; background: var(--color-canvas); border-radius: var(--radius-md); border: var(--rule-thin) solid var(--color-line); }
 .barrier-post { position: absolute; left: 12%; bottom: 27px; width: 44px; height: 80px; background: var(--color-warning); border-radius: var(--radius-sm) var(--radius-sm) 0 0; }
 .barrier-post span { position: absolute; left: 50%; top: 18px; width: 12px; height: 12px; transform: translateX(-50%); border-radius: 50%; background: var(--color-danger); }
@@ -124,7 +130,7 @@ fieldset:disabled { opacity: .4; }
 .range-control, .demo-selects label { display: grid; gap: var(--space-xs); color: var(--color-muted); font-size: var(--text-sm); }
 .range-control > span { display: flex; justify-content: space-between; }
 .range-control output { color: var(--color-accent); font-family: var(--font-mono); }
-.demo-selects { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-sm); }
+.demo-selects { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--space-sm); }
 select { width: 100%; min-height: 42px; background: var(--color-surface-raised); color: var(--color-text); border: var(--rule-thin) solid var(--color-line); border-radius: var(--radius-sm); padding: 0 var(--space-sm); }
 select:hover:not(:disabled), input:hover:not(:disabled) { border-color: var(--color-accent); }
 select:active:not(:disabled), input:active:not(:disabled) { outline: 2px solid var(--color-focus); outline-offset: 1px; }

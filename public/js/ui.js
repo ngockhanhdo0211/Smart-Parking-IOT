@@ -50,12 +50,19 @@
   }
 
   function renderGate(gate) {
-    const status = gate.status.toUpperCase();
-    $('gate-status').textContent = status;
-    $('barrier-scene').dataset.status = gate.status;
-    $('barrier-scene').setAttribute('aria-label', `Gate is ${gate.status}`);
-    $('open-gate').disabled = ['open', 'opening'].includes(gate.status);
-    $('close-gate').disabled = ['closed', 'closing'].includes(gate.status);
+    const gates = gate.in && gate.out ? gate : {
+      in: { status: gate.status, command: gate.command },
+      out: { status: 'closed', command: 'none' }
+    };
+    ['in', 'out'].forEach((gateId) => {
+      const gateState = gates[gateId];
+      const label = gateId === 'in' ? 'Entry' : 'Exit';
+      $(`gate-${gateId}-status`).textContent = gateState.status.toUpperCase();
+      $(`barrier-${gateId}-scene`).dataset.status = gateState.status;
+      $(`barrier-${gateId}-scene`).setAttribute('aria-label', `${label} gate is ${gateState.status}`);
+      $(`open-gate-${gateId}`).disabled = ['open', 'opening'].includes(gateState.status);
+      $(`close-gate-${gateId}`).disabled = ['closed', 'closing'].includes(gateState.status);
+    });
   }
 
   function renderSystemStatus(system) {

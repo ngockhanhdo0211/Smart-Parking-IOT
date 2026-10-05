@@ -23,8 +23,8 @@
 
   window.ParkingApi = {
     getSystemState: () => request('/api/system/state'),
-    openGate: () => request('/api/gate/open', { method: 'POST', body: '{}' }),
-    closeGate: () => request('/api/gate/close', { method: 'POST', body: '{}' }),
+    openGate: (gate = 'in') => request(`/api/gate/${gate}/open`, { method: 'POST', body: '{}' }),
+    closeGate: (gate = 'in') => request(`/api/gate/${gate}/close`, { method: 'POST', body: '{}' }),
     sendDemoData: (data) => request('/api/system/demo', { method: 'POST', body: JSON.stringify(data) })
   };
 }(window));

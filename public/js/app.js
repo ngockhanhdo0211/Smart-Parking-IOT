@@ -3,7 +3,7 @@
   const ui = window.ParkingUi;
   const $ = (id) => document.getElementById(id);
   let currentState = null;
-  let actionLocked = false;
+  const actionLocks = { in: false, out: false };
 
   function setButtonLoading(button, loading) {
     button.classList.toggle('is-loading', loading);
@@ -11,9 +11,9 @@
     if (loading) button.disabled = true;
   }
 
-  async function gateAction(action, button) {
-    if (actionLocked) return;
-    actionLocked = true;
+  async function gateAction(gateId, action, button) {
+    if (actionLocks[gateId]) return;
+    actionLocks[gateId] = true;
     setButtonLoading(button, true);
     try {
       await action();
@@ -22,7 +22,7 @@
       ui.showConnectionError(true);
     } finally {
       setButtonLoading(button, false);
-      actionLocked = false;
+      actionLocks[gateId] = false;
       if (currentState) ui.renderGate(currentState.gate);
     }
   }
@@ -50,7 +50,12 @@
     $('demo-gas-output').textContent = `${state.sensors.gas.value} ppm`;
     $('demo-vibration').value = String(state.sensors.vibration.detected);
     $('demo-esp').value = String(state.system.esp32Online);
-    $('demo-gate').value = state.gate.status;
+    const gates = state.gate.in && state.gate.out ? state.gate : {
+      in: state.gate,
+      out: { status: 'closed' }
+    };
+    $('demo-gate-in').value = gates.in.status;
+    $('demo-gate-out').value = gates.out.status;
   }
 
   function receiveState(state) {
@@ -82,8 +87,10 @@
   socket.on('connect_error', () => ui.showConnectionError(true));
   socket.on('system:update', receiveState);
 
-  $('open-gate').addEventListener('click', () => gateAction(api.openGate, $('open-gate')));
-  $('close-gate').addEventListener('click', () => gateAction(api.closeGate, $('close-gate')));
+  $('open-gate-in').addEventListener('click', () => gateAction('in', () => api.openGate('in'), $('open-gate-in')));
+  $('close-gate-in').addEventListener('click', () => gateAction('in', () => api.closeGate('in'), $('close-gate-in')));
+  $('open-gate-out').addEventListener('click', () => gateAction('out', () => api.openGate('out'), $('open-gate-out')));
+  $('close-gate-out').addEventListener('click', () => gateAction('out', () => api.closeGate('out'), $('close-gate-out')));
   $('demo-enabled').addEventListener('change', (event) => {
     $('demo-controls').disabled = !event.target.checked;
     $('demo-panel').classList.toggle('is-enabled', event.target.checked);
@@ -102,7 +109,8 @@
         gas: Number($('demo-gas').value),
         vibration: $('demo-vibration').value === 'true',
         esp32Online: $('demo-esp').value === 'true',
-        gateStatus: $('demo-gate').value
+        gateInStatus: $('demo-gate-in').value,
+        gateOutStatus: $('demo-gate-out').value
       });
     } catch (error) {
       ui.showToast(error.message, 'error');

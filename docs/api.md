@@ -15,7 +15,10 @@ Lấy snapshot đầy đủ.
     "p4": { "occupied": false }
   },
   "sensors": { "gas": { "value": 350, "warning": false }, "vibration": { "detected": false } },
-  "gate": { "status": "closed", "command": "none" },
+  "gate": {
+    "in": { "status": "closed", "command": "none" },
+    "out": { "status": "closed", "command": "none" }
+  },
   "system": { "esp32Online": true, "lastSeen": 1770000000000 }
 }
 ```
@@ -40,20 +43,38 @@ Response `200`:
 
 Request hợp lệ đồng thời đặt ESP32 online và cập nhật `lastSeen` bằng timestamp của server.
 
-## POST /api/gate/open
+## POST /api/gate/in/open
 
-Không cần body. Đặt command thành `open`, status tạm thời thành `opening`.
+Không cần body. Đặt riêng command cổng vào thành `open`, status tạm thời thành `opening`.
 
 ```json
-{ "success": true, "command": "open" }
+{ "success": true, "gate": "in", "command": "open" }
 ```
 
-## POST /api/gate/close
+## POST /api/gate/in/close
 
-Không cần body. Đặt command thành `close`, status tạm thời thành `closing`.
+Không cần body. Đặt riêng command cổng vào thành `close`, status tạm thời thành `closing`.
 
 ```json
-{ "success": true, "command": "close" }
+{ "success": true, "gate": "in", "command": "close" }
+```
+
+Hai endpoint cũ `POST /api/gate/open` và `POST /api/gate/close` vẫn hoạt động như alias cho cổng vào.
+
+## POST /api/gate/out/open
+
+Không cần body. Đặt riêng command cổng ra thành `open`.
+
+```json
+{ "success": true, "gate": "out", "command": "open" }
+```
+
+## POST /api/gate/out/close
+
+Không cần body. Đặt riêng command cổng ra thành `close`.
+
+```json
+{ "success": true, "gate": "out", "command": "close" }
 ```
 
 ## GET /api/gate/command
@@ -61,26 +82,33 @@ Không cần body. Đặt command thành `close`, status tạm thời thành `cl
 ESP32 poll endpoint này.
 
 ```json
-{ "command": "open" }
+{
+  "gate": "in",
+  "command": "open",
+  "commands": {
+    "in": "open",
+    "out": "none"
+  }
+}
 ```
 
-Command có thể là `open`, `close` hoặc `none`.
+`gate` là `in`, `out` hoặc `null`; `command` là lệnh ưu tiên tiếp theo. `commands` luôn chứa lệnh hiện tại của cả hai cổng, cho phép ESP32 xử lý hai lệnh độc lập. Nếu không có lệnh, response là `{"gate":null,"command":"none","commands":{"in":"none","out":"none"}}`.
 
 ## POST /api/gate/status
 
 ESP32 báo trạng thái sau khi servo thực thi. Giá trị hợp lệ: `open`, `closed`, `opening`, `closing`.
 
 ```json
-{ "status": "open" }
+{ "gate": "in", "status": "open" }
 ```
 
 Response:
 
 ```json
-{ "success": true, "status": "open" }
+{ "success": true, "gate": "in", "status": "open" }
 ```
 
-Server reset command về `none` sau request hợp lệ.
+`gate` phải là `in` hoặc `out`. Server chỉ reset command của đúng cổng đó về `none`. Body cũ chỉ có `status` vẫn được hiểu là cổng vào.
 
 ## POST /api/system/demo
 
@@ -92,7 +120,8 @@ Endpoint dùng bởi Developer / Demo Panel.
   "gas": 250,
   "vibration": false,
   "esp32Online": true,
-  "gateStatus": "closed"
+  "gateInStatus": "closed",
+  "gateOutStatus": "closed"
 }
 ```
 

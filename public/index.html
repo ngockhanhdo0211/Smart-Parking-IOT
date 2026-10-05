@@ -57,13 +57,28 @@
       </section>
 
       <section class="panel gate-panel">
-        <div class="section-heading"><div><span class="section-index">03</span><h2>Gate control</h2></div><p id="gate-status">CLOSED</p></div>
-        <div class="barrier-scene" id="barrier-scene" aria-label="Gate is closed">
-          <div class="barrier-post"><span></span></div><div class="barrier-arm"><i></i><i></i><i></i><i></i></div><div class="road-line"></div>
-        </div>
-        <div class="button-row">
-          <button class="button primary" id="open-gate" type="button">Open gate</button>
-          <button class="button secondary" id="close-gate" type="button">Close gate</button>
+        <div class="section-heading"><div><span class="section-index">03</span><h2>Gate control</h2></div><p>Independent entry and exit barriers</p></div>
+        <div class="gate-grid">
+          <article class="gate-unit">
+            <div class="gate-unit-heading"><div><span>GPIO 13</span><h3>ENTRY GATE</h3></div><strong id="gate-in-status">CLOSED</strong></div>
+            <div class="barrier-scene" id="barrier-in-scene" aria-label="Entry gate is closed">
+              <div class="barrier-post"><span></span></div><div class="barrier-arm"><i></i><i></i><i></i><i></i></div><div class="road-line"></div>
+            </div>
+            <div class="button-row">
+              <button class="button primary" id="open-gate-in" type="button">Open entry gate</button>
+              <button class="button secondary" id="close-gate-in" type="button">Close entry gate</button>
+            </div>
+          </article>
+          <article class="gate-unit">
+            <div class="gate-unit-heading"><div><span>GPIO 14</span><h3>EXIT GATE</h3></div><strong id="gate-out-status">CLOSED</strong></div>
+            <div class="barrier-scene" id="barrier-out-scene" aria-label="Exit gate is closed">
+              <div class="barrier-post"><span></span></div><div class="barrier-arm"><i></i><i></i><i></i><i></i></div><div class="road-line"></div>
+            </div>
+            <div class="button-row">
+              <button class="button primary" id="open-gate-out" type="button">Open exit gate</button>
+              <button class="button secondary" id="close-gate-out" type="button">Close exit gate</button>
+            </div>
+          </article>
         </div>
       </section>
     </div>
@@ -91,7 +106,8 @@
         <div class="demo-selects">
           <label>Vibration<select id="demo-vibration"><option value="false">Normal</option><option value="true">Detected</option></select></label>
           <label>ESP32<select id="demo-esp"><option value="false">Offline</option><option value="true">Online</option></select></label>
-          <label>Gate status<select id="demo-gate"><option value="closed">Closed</option><option value="opening">Opening</option><option value="open">Open</option><option value="closing">Closing</option></select></label>
+          <label>Entry gate<select id="demo-gate-in"><option value="closed">Closed</option><option value="opening">Opening</option><option value="open">Open</option><option value="closing">Closing</option></select></label>
+          <label>Exit gate<select id="demo-gate-out"><option value="closed">Closed</option><option value="opening">Opening</option><option value="open">Open</option><option value="closing">Closing</option></select></label>
         </div>
         <button class="button primary" id="apply-demo" type="button">Apply simulation</button>
       </fieldset>

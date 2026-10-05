@@ -27,16 +27,34 @@ Content-Type: application/json
 ## Luồng điều khiển cổng
 
 ```text
-Website POST /api/gate/open
+Website POST /api/gate/in/open hoặc /api/gate/out/open
         ↓
-Server giữ command = open
+Server giữ command độc lập cho từng cổng
         ↓ ESP32 GET /api/gate/command
-Servo mở thanh chắn
-        ↓ ESP32 POST /api/gate/status {"status":"open"}
-Server đặt status = open, command = none và broadcast dashboard
+ESP32 đọc gate: in → servo GPIO 13; gate: out → servo GPIO 14
+        ↓
+Servo mở hoặc đóng thanh chắn tương ứng
+        ↓ ESP32 POST /api/gate/status {"gate":"in","status":"open"}
+Server cập nhật đúng cổng, reset command của cổng đó và broadcast dashboard
 ```
 
-ESP32 nên poll command khoảng mỗi 500–1000 ms. Chỉ thực hiện khi command khác `none`. Sau khi servo tới vị trí mong muốn, luôn gửi status để server xóa lệnh; nếu không, ESP32 có thể thực hiện lại cùng command.
+ESP32 nên poll command khoảng mỗi 500–1000 ms. Chỉ thực hiện khi `command` khác `none`. `in` ánh xạ GPIO 13, `out` ánh xạ GPIO 14. Sau khi servo tới vị trí mong muốn, luôn gửi `gate` và `status` để server chỉ xóa đúng lệnh đã thực hiện.
+
+Response command đầy đủ:
+
+```json
+{
+  "gate": "out",
+  "command": "close",
+  "commands": { "in": "none", "out": "close" }
+}
+```
+
+Status tương ứng:
+
+```json
+{ "gate": "out", "status": "closed" }
+```
 
 ## Cấu hình mạng
 

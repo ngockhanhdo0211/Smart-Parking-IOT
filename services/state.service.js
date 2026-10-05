@@ -10,7 +10,10 @@ const createInitialState = () => ({
     gas: { value: 0, warning: false },
     vibration: { detected: false }
   },
-  gate: { status: 'closed', command: 'none' },
+  gate: {
+    in: { status: 'closed', command: 'none' },
+    out: { status: 'closed', command: 'none' }
+  },
   system: { esp32Online: false, lastSeen: null }
 });
 
@@ -39,15 +42,25 @@ function updateVibration(detected) {
   state.sensors.vibration.detected = detected;
 }
 
-function setGateCommand(command) {
-  state.gate.command = command;
-  state.gate.status = command === 'open' ? 'opening' : 'closing';
+function setGateCommand(gateId, command) {
+  // Backward compatibility: setGateCommand('open') controls the entry gate.
+  if (command === undefined) {
+    command = gateId;
+    gateId = 'in';
+  }
+  state.gate[gateId].command = command;
+  state.gate[gateId].status = command === 'open' ? 'opening' : 'closing';
   notifyChange();
 }
 
-function updateGateStatus(status) {
-  state.gate.status = status;
-  state.gate.command = 'none';
+function updateGateStatus(gateId, status) {
+  // Backward compatibility: updateGateStatus('open') updates the entry gate.
+  if (status === undefined) {
+    status = gateId;
+    gateId = 'in';
+  }
+  state.gate[gateId].status = status;
+  state.gate[gateId].command = 'none';
   notifyChange();
 }
 
@@ -64,15 +77,20 @@ function updateFromDevice({ parking, gas, vibration }) {
   notifyChange();
 }
 
-function updateDemo({ parking, gas, vibration, esp32Online, gateStatus }) {
+function updateDemo({ parking, gas, vibration, esp32Online, gateStatus, gateInStatus, gateOutStatus }) {
   updateParking(parking);
   updateGas(gas);
   updateVibration(vibration);
   state.system.esp32Online = esp32Online;
   state.system.lastSeen = esp32Online ? Date.now() : state.system.lastSeen;
-  if (gateStatus) {
-    state.gate.status = gateStatus;
-    state.gate.command = 'none';
+  const entryStatus = gateInStatus || gateStatus;
+  if (entryStatus) {
+    state.gate.in.status = entryStatus;
+    state.gate.in.command = 'none';
+  }
+  if (gateOutStatus) {
+    state.gate.out.status = gateOutStatus;
+    state.gate.out.command = 'none';
   }
   notifyChange();
 }
